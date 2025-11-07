@@ -10,24 +10,52 @@ An MCP (Model Context Protocol) server that provides tools for interacting with 
 - Copy and move content between locations
 - Manage configurations
 - Lookup Media and Fragment References
+- **Set Up Block Library** - Automatically create block documentation from GitHub repo code with real content from sample pages
 
 ## Cursor AI setup
 
 To use this MCP server with Cursor AI, go to `Cursor Settings`, `MCP` and a `New global MCP server`. Add this entry to your list of `mcpServers`:
 
-```
-"da-live-admin": {
- "command": "npx",
+```json
+"da-live-media": {
+  "command": "npx",
   "args": [
-    "https://github.com/kptdobe/mcp-da-live-admin"
+    "https://github.com/your-org/mcp-da-live-media"
   ],
   "env": {
-    "DA_ADMIN_API_TOKEN": "your_api_token_here"
+    "DA_ADMIN_API_TOKEN": "your_api_token_here",
+    "GITHUB_TOKEN": "ghp_your_token_here"
   }
 }
 ```
 
 In the chat, you can then ask things like: `Via the DA Admin, give me the list of resources in <your_org>/<your_repo>/<path>`.
+
+## GitHub Token Setup (Required for Block Library)
+
+To use the block library features, add a `GITHUB_TOKEN` to your MCP config:
+
+1. Generate token at: `https://github.com/settings/tokens/new`
+2. Select scopes: `repo` and `read:org`
+3. Add to MCP config `env`: `"GITHUB_TOKEN": "ghp_your_token_here"`
+
+This increases GitHub API rate limit from 60 to 5,000 requests/hour.
+
+## Usage
+
+### Set Up Block Library
+
+Create block documentation with real content from sample pages:
+
+```
+Set up block library for <org>/<repo> using sample page at <url>
+```
+
+The tool will:
+- Discover all blocks from GitHub repo
+- Extract real content from your sample page(s)
+- Create block documentation with live examples
+- Update library configuration
 
 ## Contributing
 

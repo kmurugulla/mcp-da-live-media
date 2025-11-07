@@ -8,14 +8,9 @@ const ListSourcesSchema = z.object({
 });
 
 async function listSources(org, repo, path) {
-  try {
-    const url = formatURL('list', org, repo, path);
-    const result = await daAdminRequest(url);
-    return daAdminResponseFormat(result);
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  const url = formatURL('list', org, repo, path);
+  const result = await daAdminRequest(url);
+  return daAdminResponseFormat(result);
 }
 
 export const tools = [{

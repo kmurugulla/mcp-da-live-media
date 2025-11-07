@@ -28,16 +28,36 @@ export async function daAdminRequest(
 
   const init = {
     method: options.method || "GET",
-    headers,
     body: options.body || undefined,
   };
+
+  if (options.body instanceof FormData) {
+    delete headers["User-Agent"];
+    init.headers = {
+      "Authorization": headers["Authorization"]
+    };
+  } else {
+    init.headers = headers;
+  }
 
   const response = await fetch(url, init);
 
   const responseBody = await parseResponseBody(response);
 
   if (!response.ok) {
-    throw new Error(response.status, responseBody);
+    const errorMessage = typeof responseBody === 'string' 
+      ? responseBody 
+      : JSON.stringify(responseBody);
+    
+    const errorDetails = {
+      status: response.status,
+      statusText: response.statusText,
+      url,
+      method: init.method,
+      responseBody
+    };
+    
+    throw new Error(`API ${response.status} ${response.statusText}: ${errorMessage} | Details: ${JSON.stringify(errorDetails)}`);
   }
 
   return responseBody;
@@ -51,4 +71,18 @@ export function daAdminResponseFormat(data) {
 
 export function formatURL(api, org, repo, path, ext) {
   return `${ADMIN_API_URL}/${api}/${org}/${repo}/${path.startsWith("/") ? path.slice(1) : path}${ext ? `.${ext}` : ""  }`;
+}
+
+export async function uploadHTML(url, htmlContent) {
+  const body = new FormData();
+  const blob = new Blob([htmlContent], { type: 'text/html' });
+  body.set('data', blob);
+  return daAdminRequest(url, { method: 'POST', body });
+}
+
+export async function uploadJSON(url, jsonData) {
+  const body = new FormData();
+  const blob = new Blob([JSON.stringify(jsonData)], { type: 'application/json' });
+  body.set('data', blob);
+  return daAdminRequest(url, { method: 'POST', body });
 }

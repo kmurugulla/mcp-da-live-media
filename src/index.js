@@ -11,6 +11,14 @@ import { zodToJsonSchema } from 'zod-to-json-schema';
 import * as list from './operations/list.js';
 import * as source from './operations/source.js';
 import * as media from './operations/media.js';
+import * as config from './operations/config.js';
+import * as ghBlocks from './operations/gh-blocks.js';
+import * as blocks from './operations/blocks.js';
+import * as library from './operations/library.js';
+import * as templates from './operations/templates.js';
+import * as placeholders from './operations/placeholders.js';
+import * as icons from './operations/icons.js';
+import * as librarySetup from './operations/library-setup.js';
 import { VERSION } from './common/global.js';
 
 const server = new Server(
@@ -24,19 +32,41 @@ const server = new Server(
     },
     instructions: `
       You are a helpful assistant that provides tools to perform tasks related to the https://da.live platform, leveraging the https://docs.da.live/ admin API.
-      DA standads for Document Authoring. The internal project name was known as "Dark Alley".
-      DA, DA Live, da.live and Dark Alley are all the same plaform.
+      DA stands for Document Authoring. The internal project name was known as "Dark Alley".
+      DA, DA Live, da.live and Dark Alley are all the same platform.
       DA Live Admin API is the API used to manage the content on the DA Live platform.
-      org is a organization name.
+      org is an organization name.
       repo is a repository name.
       path is a path to a file or folder in the content of the repository.
       Quite often, <org>/<repo>/<path> is used to refer to a specific file or folder in the content of the repository. <path> may contain multiple slashes.
       Using for example myorg/myrepo/myfolder/myfile.html refers to the myorg org, myrepo repo and file at /myfolder/myfile.html.
-      Content can be access via: https://admin.da.live/source/<org>/<repo>/<path>.<extension>
-      For example, https://admin.da.live/source/myorg/myrepo/myfolder/myfile.html is the URL to access the myfile.html file in the myfolder folder in the myrepo repo in the myorg org.
-      
+      Admin content can be accessed via: https://admin.da.live/source/<org>/<repo>/<path>.<extension>
+      Published content can be accessed via: https://content.da.live/<org>/<repo>/<path>
+
       Media tools allow you to lookup media and fragment references from sites.
       References are stored in .da/mediaindex/media.json and include all images, videos, documents, and fragments used across pages.
+
+      Library management tools allow you to:
+      - Discover blocks from GitHub repositories
+      - Create block documentation in DA
+      - Manage library configurations (blocks.json, templates.json, placeholders.json, icons.json)
+      - Register library types in site configuration
+
+      Library types:
+      - Blocks: Multi-sheet JSON with name/path columns and options sheet. Stored at /library/blocks/
+      - Templates: Single-sheet JSON with key/value columns. Stored at /library/templates/
+      - Placeholders: Single-sheet JSON with Key/Text columns. Configurable path (default: /placeholders.json)
+      - Icons: Single-sheet JSON with key/icon columns. Stored at /library/icons/
+
+      Library structure:
+      - Site config at /config/{org}/{repo} contains a "library" sheet that registers library types
+      - Block paths in library configs use content.da.live domain format
+      
+      GitHub integration:
+      - Requires GITHUB_TOKEN environment variable for private repositories
+      - Public repositories can be accessed without token (with rate limits)
+      - Blocks are discovered from /blocks folder (or custom path like aemedge/blocks)
+      - GitHub org/repo names match DA org/repo names
     `,
   }
 );
@@ -45,6 +75,14 @@ const tools = [
   ...list.tools,
   ...source.tools,
   ...media.tools,
+  ...config.tools,
+  ...ghBlocks.tools,
+  ...blocks.tools,
+  ...library.tools,
+  ...templates.tools,
+  ...placeholders.tools,
+  ...icons.tools,
+  ...librarySetup.tools,
 ];
 
 server.setRequestHandler(ListToolsRequestSchema, async () => {

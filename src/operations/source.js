@@ -46,46 +46,31 @@ const DeleteSourceSchema = z.object({
 });
 
 async function getSource(org, repo, path, ext) {
-  try {
-    const url = formatURL('source', org, repo, path, ext);
-    const data = await daAdminRequest(url);
-    return daAdminResponseFormat(data);
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  const url = formatURL('source', org, repo, path, ext);
+  const data = await daAdminRequest(url);
+  return daAdminResponseFormat(data);
 }
 
 async function createSource(org, repo, path, ext, content) {
-  try {
-    const url = formatURL('source', org, repo, path, ext);
-    const body = new FormData();
-    const type = ext === 'html' ? 'text/html' : 'application/json';
-    const blob = new Blob([content], { type });
-    body.set('data', blob);
-    
-    const data = await daAdminRequest(url, {
-      method: 'POST',
-      body,
-    });
-    return daAdminResponseFormat(data);
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  const url = formatURL('source', org, repo, path, ext);
+  const body = new FormData();
+  const type = ext === 'html' ? 'text/html' : 'application/json';
+  const blob = new Blob([content], { type });
+  body.set('data', blob);
+  
+  const data = await daAdminRequest(url, {
+    method: 'POST',
+    body,
+  });
+  return daAdminResponseFormat(data);
 }
 
 async function deleteSource(org, repo, path, ext) {
-  try {
-    const url = formatURL('source', org, repo, path, ext);
-    const data = await daAdminRequest(url, {
-      method: 'DELETE'
-    });
-    return daAdminResponseFormat(data);
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  const url = formatURL('source', org, repo, path, ext);
+  const data = await daAdminRequest(url, {
+    method: 'DELETE'
+  });
+  return daAdminResponseFormat(data);
 } 
 
 export const tools = [{
