@@ -54,8 +54,11 @@ e.g:
 - set up block library in kmurugulla org , brightspath site with example content from homepage , /ue-editor/demo pages. 
 - create a template called "Blog" based in the document at /blogs/article
 - Add a place holder for Telephone mapped to 1-800-123-4567
-The tool will:
-- Discover all blocks from GitHub repo
+
+
+** The tool will **:
+- Reads the Blocks if ran from a local EDS project
+- (or) can discover all blocks from GitHub repo
 - Extract real content from your sample page(s)
 - Create block documentation with live examples
 - Update library configuration
